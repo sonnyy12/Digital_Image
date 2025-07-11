@@ -225,3 +225,179 @@ Bước:
 
     4. Lưu và hiển thị kết quả
 
+    --------------------###-----------------------------
+
+    
+    ----------------------###-------------------------
+Lab 4:
+
+Câu 1:
+    Bước:
+        1. Mở ảnh & Cắt vùng LangBiang:
+
+    img = Image.open('dalat.jpg').convert('RGB')
+    x, y, w, h = 0, 0, 500, 350
+    langbiang = img.crop((x, y, x + w, y + h))
+
+        2. Tịnh tiến sang phải 100px:
+
+    translated = Image.new('RGB', (w + 100, h))
+    translated.paste(langbiang, (100, 0))
+
+        3. Chuyển sang xám:
+
+    gray = translated.convert('L')
+
+        4. Phân ngưỡng Otsu:
+    
+    a = np.asarray(gray)
+    thres = threshold_otsu(a)
+    b = a > thres
+    result = Image.fromarray((b * 255).astype(np.uint8))
+
+        5. Lưu & Hiển thị:
+    
+    result.save('lang_biang.jpg')
+
+    plt.imshow(result, cmap='gray')
+    plt.axis('off')
+    plt.show()
+
+Câu 2:
+    Bước: 
+        1. Mở ảnh & Cắt vùng Hồ Xuân Hương:
+
+    img = Image.open('dalat.jpg').convert('RGB')
+
+    x, y, w, h = 500, 0, 500, 700
+    hxh = img.crop((x, y, x + w, y + h))
+        
+        2. Xoay 45°:
+
+    rotated = hxh.rotate(45, expand=True)
+
+        3. Chuyển sang xám & Adaptive Threshold:
+
+    gray = rotated.convert('L')
+    a = np.asarray(gray)
+    b = threshold_local(a, block_size=61, offset=10)
+
+    binary_adaptive = a > b
+
+        4. Lưu & hiển thị:
+    
+    result = Image.fromarray((binary_adaptive * 255).astype(np.uint8))
+
+    result.save('ho_xuan_huong.jpg')
+    plt.imshow(result, cmap='gray')
+    plt.axis('off')
+    plt.show()
+
+Câu 3:
+    Bước:
+        1. Mở ảnh & cắt quảng trường lâm viên:
+
+    img = Image.open('dalat.jpg').convert('L')
+    x, y, w, h = 1000, 0, 400, 300
+    lam_vien = img.crop((x, y, x + w, y + h))
+
+        2. Phân ngưỡng otsu:
+    
+    a = np.asarray(lam_vien)
+    thres = threshold_otsu(a)
+    binary = a > thres
+
+        3. Binary Closing:
+
+    s = np.array([[0, 1, 0],
+              [1, 1, 1],
+              [0, 1, 0]])
+    b = nd.binary_closing(binary, structure=s, iterations=50)
+
+        4. Lưu & hiển thị:
+
+    result = Image.fromarray((b * 255).astype(np.uint8))
+    result.save('quan_truong_lam_vien.jpg')
+
+    plt.imshow(result, cmap='gray')
+    plt.show()
+
+Câu 4:
+
+1. Các chức năng:
+
+    A. geometric_transformation
+
+        1. coordinate_mapping
+
+        Cắt vùng (0,0,400,300) → minh hoạ mapping toạ độ.
+
+        2. Rotate
+
+        Xoay ảnh 45°.
+
+        3. Scale
+
+        Phóng to ảnh 1.5x so với kích thước gốc.
+
+        4. Shift
+
+        Dịch chuyển ảnh 50 pixel theo X & Y.
+    
+    B. segment
+
+        1. Adaptive_thresholding
+
+        Dùng threshold cục bộ: block size 61, offset 10.
+
+        2. Otsu
+
+        Phân ngưỡng Otsu toàn cục.
+
+        3. Binary_dilation
+
+        Giãn vùng trắng nhị phân.
+
+        4. Binary_erosion
+
+        Xói mòn vùng trắng nhị phân.
+
+2. Cách hoạt động:
+    Bước:
+        1.  Mở ảnh dalat.jpg → chuyển sang grayscale ('L').
+
+        2. Hiển thị cây menu:
+
+    1. geometric_transformation
+        1.1 coordinate_mapping
+        1.2 Rotate
+        1.3 Scale
+        1.4 Shift
+    2. segment
+        2.1 Adaptive_thresholding
+        2.2 Binary_dilation
+        2.3 Binary_erosion
+        2.4 Otsu
+
+        3. Nhập:
+
+    geo_choice — chọn biến đổi hình học (hoặc bỏ trống)
+
+    seg_choice — chọn phân vùng (hoặc bỏ trống)
+
+        4. Áp dụng:
+
+    Nếu có geo_choice → thực hiện biến đổi.
+
+    Nếu có seg_choice → chạy tiếp phân vùng trên kết quả biến đổi.
+
+        5. Lưu output_result.jpg & hiển thị.
+
+
+
+
+
+
+    
+    
+
